@@ -2,7 +2,7 @@
 
 ## Chiến lược đã chọn
 
-Mình chọn `serverless-http` để đưa Express app hiện tại lên AWS Lambda.
+Em chọn `serverless-http` để đưa Express app hiện tại lên AWS Lambda.
 
 Các thay đổi chính:
 
@@ -49,6 +49,12 @@ curl -X POST https://4pahfvetw1.execute-api.us-west-2.amazonaws.com/api/echo \
 ```
 
 Kết quả: cả 3 endpoint đều trả về đúng JSON giống khi chạy Express local.
+
+## Bằng chứng trên AWS Console
+
+Ảnh bên dưới cho thấy Lambda function `byol-node-express` đã được gắn với API Gateway HTTP API ở region `us-west-2`, có route `ANY /` và `ANY /{proxy+}`:
+
+![Lambda function gắn với API Gateway](evidence/image.png)
 
 ## Cold start
 
