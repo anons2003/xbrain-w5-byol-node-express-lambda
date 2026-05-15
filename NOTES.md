@@ -30,7 +30,7 @@ exports.handler = serverless(app);
 - Không làm hỏng cách chạy local bằng `server.js`.
 - Chỉ cần một adapter nhỏ để chuyển request từ API Gateway/Lambda sang Express.
 
-Mình không chọn AWS Lambda Web Adapter vì tuy gần như không sửa JavaScript, nhưng cần thêm Lambda Layer và cấu hình runtime phức tạp hơn. Với bài này, một entrypoint adapter ngắn sẽ dễ review và debug hơn.
+Không chọn AWS Lambda Web Adapter vì tuy gần như không sửa JavaScript, nhưng cần thêm Lambda Layer và cấu hình runtime phức tạp hơn. Với bài này, một entrypoint adapter ngắn sẽ dễ review và debug hơn.
 
 ## Triển khai
 
