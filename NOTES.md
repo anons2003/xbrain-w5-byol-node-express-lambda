@@ -66,17 +66,3 @@ Kết quả: cả 3 endpoint đều trả về đúng JSON giống khi chạy Ex
 
 Cold start trung bình báo cáo: khoảng `315 ms`.
 
-## Số dòng thay đổi
-
-Nếu tính toàn bộ diff để nộp bài, bao gồm `NOTES.md` và `package-lock.json`:
-
-- `70 insertions`
-- `3 deletions`
-
-Nếu chỉ tính phần kỹ thuật để app chạy được trên Lambda:
-
-- Thêm `lambda.js`: 4 dòng.
-- Thêm dependency `serverless-http` trong `package.json`.
-- Đổi `Handler` trong `template.yaml` thành `lambda.handler`.
-
-`app.js` không bị sửa.
