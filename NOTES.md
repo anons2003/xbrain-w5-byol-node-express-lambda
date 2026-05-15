@@ -1,34 +1,44 @@
-# NOTES
+# Ghi chú triển khai
 
-## Strategy
+## Chiến lược đã chọn
 
-I used `serverless-http`.
+Mình chọn `serverless-http` để đưa Express app hiện tại lên AWS Lambda.
 
-Changes:
+Các thay đổi chính:
 
-- Added `lambda.js` as the Lambda entrypoint.
-- Added the `serverless-http` npm dependency.
-- Updated `template.yaml` from `Handler: TODO_FILL_IN` to `Handler: lambda.handler`.
-- Kept `app.js` and `server.js` framework-pure so the app still runs locally with `npm start`.
+- Thêm `lambda.js` làm entrypoint cho Lambda.
+- Thêm dependency `serverless-http`.
+- Cập nhật `template.yaml` từ `Handler: TODO_FILL_IN` thành `Handler: lambda.handler`.
+- Giữ nguyên `app.js` và `server.js`, nên app vẫn chạy local bằng `npm start`.
 
-## Reason
+Phần logic chạy Lambda thực sự nằm ở `lambda.js`:
 
-This is the smallest practical change for an existing Express app:
+```js
+const serverless = require('serverless-http');
+const app = require('./app');
 
-- No route rewrite.
-- No Lambda-specific code inside `app.js`.
-- No custom API Gateway event parsing.
-- Local development stays unchanged through `server.js`.
+exports.handler = serverless(app);
+```
 
-I did not choose Lambda Web Adapter because it would avoid JavaScript changes but requires an extra Lambda layer/runtime boot path. For this assignment, a 3-line adapter entrypoint is simpler to review and debug.
+## Lý do chọn
 
-## Deploy
+Đây là cách thay đổi ít và rõ ràng nhất cho một Express app có sẵn:
+
+- Không rewrite route.
+- Không đưa code Lambda-specific vào `app.js`.
+- Không tự viết code parse event từ API Gateway.
+- Không làm hỏng cách chạy local bằng `server.js`.
+- Chỉ cần một adapter nhỏ để chuyển request từ API Gateway/Lambda sang Express.
+
+Mình không chọn AWS Lambda Web Adapter vì tuy gần như không sửa JavaScript, nhưng cần thêm Lambda Layer và cấu hình runtime phức tạp hơn. Với bài này, một entrypoint adapter ngắn sẽ dễ review và debug hơn.
+
+## Triển khai
 
 - Region: `us-west-2`
 - Stack: `byol-node-express`
 - API Gateway URL: `https://4pahfvetw1.execute-api.us-west-2.amazonaws.com`
 
-Smoke tests:
+Các lệnh smoke test:
 
 ```bash
 curl https://4pahfvetw1.execute-api.us-west-2.amazonaws.com/
@@ -38,14 +48,29 @@ curl -X POST https://4pahfvetw1.execute-api.us-west-2.amazonaws.com/api/echo \
   -d '{"hi":"there"}'
 ```
 
-All three returned the same JSON shape as the local Express server.
+Kết quả: cả 3 endpoint đều trả về đúng JSON giống khi chạy Express local.
 
-## Cold Start
+## Cold start
 
-Measured from CloudWatch `REPORT` lines for `/aws/lambda/byol-node-express` after deploy:
+Đo từ các dòng `REPORT` trong CloudWatch log group `/aws/lambda/byol-node-express` sau khi deploy:
 
 - `Init Duration: 274.57 ms`
 - `Init Duration: 333.75 ms`
 - `Init Duration: 335.31 ms`
 
-Reported cold start: about `315 ms` average.
+Cold start trung bình báo cáo: khoảng `315 ms`.
+
+## Số dòng thay đổi
+
+Nếu tính toàn bộ diff để nộp bài, bao gồm `NOTES.md` và `package-lock.json`:
+
+- `70 insertions`
+- `3 deletions`
+
+Nếu chỉ tính phần kỹ thuật để app chạy được trên Lambda:
+
+- Thêm `lambda.js`: 4 dòng.
+- Thêm dependency `serverless-http` trong `package.json`.
+- Đổi `Handler` trong `template.yaml` thành `lambda.handler`.
+
+`app.js` không bị sửa.
